@@ -4,3 +4,4 @@
 *.msi
 !**/Third-party/*.txt
 **/Third-party/
+config.ini
