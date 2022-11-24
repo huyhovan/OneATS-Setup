@@ -2,4 +2,5 @@
 
 *.exe
 *.msi
+!**/Third-party/*.txt
 **/Third-party/
