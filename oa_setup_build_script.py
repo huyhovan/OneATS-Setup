@@ -6,6 +6,7 @@ import pathlib
 import configparser
 import subprocess
 import datetime
+import os.path
 
 
 # Commandline Argument
@@ -21,9 +22,9 @@ timestamp = timestamp[-8:]
 
 # folder path
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-dir_configFile = (os.path.join(__location__, 'config.ini'))
 dir_thirdparty = dir_path.file_path+ '\Third-party'
 dir_innoscript = (os.path.join(__location__, 'OneATSSetup.iss'))
+dir_configFile = (os.path.join(__location__, 'config.ini'))
 
 
 # list to store files
@@ -37,11 +38,22 @@ for path in os.listdir(str(dir_path.file_path)):
         
 #print(res)
  
-# Read Config File
-config= configparser.ConfigParser()
-config.read(dir_configFile)
-
 # Config file
+config= configparser.ConfigParser()
+
+# Create config.ini file
+config['Settings'] = {'buildversion':timestamp }
+config['MongoDB'] = {'mongodblicense': '' , 'mongodbinitfolder':''  ,'mongodbversion': '4.2.23', 'mongodbfile': ''}          
+config['FEP'] = {'fepversion': '',  'fepfile': ''}             
+config['DS_DE'] = {'dsversion': '', 'dsfile': '', 'deversion': '','defile': ''}  
+config['HMI'] = {'hmiversion': '',  'hmifile': ''} 
+config['HIS'] = {'hisversion': '',  'hisfile': ''} 
+config['Third-Party'] = {'vsredisx86version': '','vsredisx86file': '','vsredisx64version': '','vsredisx64file': '',
+                         'pinsx86version': '','pinsx86file': '','pinsx64version': '', 'pinsx64file': '',
+                         'pisdkversion': '','pisdkfile': '',
+                         'opccorex86version': '','opccorex86file': '','opccorex64version': '','opccorex64file': ''  } 
+ 
+# Update 
 config['Settings']['buildversion'] = timestamp
 config['MongoDB']['mongodblicense']= dir_thirdparty+ "\\" + "MongoDBLicense.txt" 
 config['MongoDB']['mongodbinitfolder']= dir_thirdparty+ "\\" + "MongoDB Initiate"  
@@ -83,12 +95,16 @@ def UpdateConfigFile(fileName):
 for filename in res:
     UpdateConfigFile(filename)
 
-# Save Change in Config file
+# Save Config file
 with open(dir_configFile, 'w') as configfile:    # save
     config.write(configfile)
 
 # Compile Inno Script
-subprocess.run(["C:\Program Files (x86)\Inno Setup 6\iscc.exe", dir_innoscript])
+if os.path.isfile(dir_configFile) :
+    subprocess.run(["C:\Program Files (x86)\Inno Setup 6\iscc.exe", dir_innoscript])
+else:
+    print('Can not compile inno script, check config file')
 
+########################
 
 

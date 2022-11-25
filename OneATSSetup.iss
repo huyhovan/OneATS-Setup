@@ -122,9 +122,9 @@ Name: "{autoprograms}\{#App_Name}"; Filename: "{app}\{#App_ExeName}";
 [Run]  
 
 Filename:"msiexec.exe"; Parameters: " /l*v mdbinstall.log /qn /i ""{tmp}\mongodb.msi"" ADDLOCAL=""ServerNoService""  SHOULD_INSTALL_COMPASS=""0"" INSTALLLOCATION=""{#App_InstallDir}\MongoDB\Server\4.2\"" "; Flags:waituntilterminated; WorkingDir: {tmp};   Components:"MongoDB";  StatusMsg: "Installing OneATS Database Server (MongoDB Server) ..."; BeforeInstall: SetMarqueeProgress(True);    
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\FEP.msi"" ";  WorkingDir: {tmp}; Components:"FEP"; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing FEP ...";  AfterInstall: SetMarqueeProgress(False);
+Filename:"msiexec.exe"; Parameters:" /qn+ /i ""{tmp}\FEP.msi"" ";  WorkingDir: {tmp}; Components:"FEP"; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing FEP ...";  AfterInstall: SetMarqueeProgress(False);
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataServer.msi"" ";WorkingDir: {tmp}; Components:"Data\DataServer";   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Data Server..."; 
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataEditor.msi"" ";WorkingDir: {tmp}; Components:"Data\DE";   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
+Filename:"msiexec.exe"; Parameters:" /qn+ /i ""{tmp}\DataEditor.msi"" ";WorkingDir: {tmp}; Components:"Data\DE";   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
 Filename:"{app}\SmartHMIStudio_v4.1.6905.exe";  Parameters:" /VERYSILENT  /NORESTART /ComputerName={code:GetComputerName}";Components:"SmartHMI"; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Smart HMI ...";
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\SmartHis.msi""  "; WorkingDir: {tmp}; Components: HIS\SmartHis HIS\HisServer;  Flags:waituntilterminated; StatusMsg: "Installing Smart His ..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PINS.msi"" ";   WorkingDir: {tmp}; Components:"third_party\PiNS"; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi Network Subsystem..."; 
