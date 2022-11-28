@@ -67,35 +67,35 @@ ExtraDiskSpaceRequired= 580288000
 Name:"english"; MessagesFile: "compiler:Default.isl"
 
 
-[Types]
-Name: "standard"; Description: "Standard installation";
-Name: "custom"; Description: "Custom installation"; Flags: iscustom;          
+[Types]   
+Name: "custom"; Description: "Custom installation"; Flags: iscustom;     
+Name: "full"; Description: "Full installation";     
 
 [Components]   
-Name:"third_party"; Description:"Third-party"; Types: "custom";  Flags: disablenouninstallwarning; 
-Name:"third_party\VCRedistributable"; Description:"Microsoft VC redistributable 2015-2019"; Types: "standard";  
-Name:"third_party\PiNS"; Description:"Pi Network Systems"; Types: "custom";  Flags: disablenouninstallwarning;
-Name:"third_party\PiSDK"; Description:"Pi SDK"; Types: "custom";  Flags: disablenouninstallwarning; 
-Name:"third_party\OpcCore"; Description:"Opc-Core-Components-Redistributables ({#App_OpcCorex64Version})"; Types: "custom";  
-Name:"MongoDB"; Description:"Mongo DB ({#App_MongoDBVersion})"; Types: "custom";  Flags: disablenouninstallwarning;
-Name:"FEP"; Description: "Fep Server ({#App_FepVersion})"; Types: custom;  Flags: disablenouninstallwarning;
-Name:"Data"; Description:"Data Systems"; Types: custom; Flags: disablenouninstallwarning;
-Name:Data\DataServer; Description:"Data Server ({#App_DSVersion})"; Types: custom; Flags: disablenouninstallwarning; 
-Name:Data\DE; Description:"Data Editor ({#App_DEVersion})"; Types: custom;  Flags: disablenouninstallwarning; 
-Name:"SmartHMI"; Description: "SmartHMI ({#App_HMIVersion})"; Types:custom;   Flags: disablenouninstallwarning;
-Name:"HIS"; Description: "HIS systems ({#App_HISVersion})"; Types:custom;  Flags:  disablenouninstallwarning;
-Name:"HIS\HisServer"; Description: "His Server"; Types:custom;   Flags:  disablenouninstallwarning ;
-Name:"HIS\SmartHis"; Description: "SmartHis Administrator"; Types:custom;  Flags: disablenouninstallwarning;
-Name:"HIS\DataLink"; Description: "Data Link"; Types:custom;   Flags: disablenouninstallwarning;
-Name:"HIS\ODBCDriver"; Description: "ODBC Driver"; Types:custom;   Flags: disablenouninstallwarning;  
-Name:"HIS\WebService"; Description: "Web Service"; Types:custom;   Flags: disablenouninstallwarning;  
-Name:"HIS\ReportViewer"; Description: "Report Viewer"; Types:custom;   Flags: disablenouninstallwarning;  
+Name:"third_party"; Description:"Third-party"; Types: custom full;  Flags: disablenouninstallwarning; 
+Name:third_party\VCRedistributable; Description:"Microsoft VC redistributable 2015-2019"; Types: custom full;  
+Name:third_party\PiNS; Description:"Pi Network Systems"; Types: custom full;  Flags: disablenouninstallwarning;
+Name:third_party\PiSDK; Description:"Pi SDK"; Types:custom full;  Flags: disablenouninstallwarning; 
+Name:third_party\OpcCore; Description:"Opc-Core-Components-Redistributables ({#App_OpcCorex64Version})"; Types: custom full;  
+Name:"MongoDB"; Description:"Mongo DB ({#App_MongoDBVersion})"; Types: custom full;  Flags: disablenouninstallwarning;
+Name:"FEP"; Description: "Fep Server ({#App_FepVersion})"; Types: custom full;  Flags: disablenouninstallwarning;
+Name:"Data"; Description:"Data Systems"; Types: custom full; Flags: disablenouninstallwarning;
+Name:Data\DataServer; Description:"Data Server ({#App_DSVersion})"; Types: custom full; Flags: disablenouninstallwarning; 
+Name:Data\DE; Description:"Data Editor ({#App_DEVersion})"; Types: custom full;  Flags: disablenouninstallwarning; 
+Name:"SmartHMI"; Description: "SmartHMI ({#App_HMIVersion})"; Types:custom full;   Flags: disablenouninstallwarning;
+Name:"HIS"; Description: "HIS systems ({#App_HISVersion})"; Types:custom full;  Flags:  disablenouninstallwarning;
+Name:"HIS\HisServer"; Description: "His Server"; Types:custom full;   Flags:  disablenouninstallwarning ;
+Name:"HIS\SmartHis"; Description: "SmartHis Administrator"; Types:custom full;  Flags: disablenouninstallwarning;
+Name:"HIS\DataLink"; Description: "Data Link"; Types:custom full;   Flags: disablenouninstallwarning;
+Name:"HIS\ODBCDriver"; Description: "ODBC Driver"; Types:custom full;   Flags: disablenouninstallwarning;  
+Name:"HIS\WebService"; Description: "Web Service"; Types:custom full;   Flags: disablenouninstallwarning;  
+Name:"HIS\ReportViewer"; Description: "Report Viewer"; Types:custom full;   Flags: disablenouninstallwarning;  
                                                                                                              
  
 
 [UninstallDelete]
-//Type: files; Name: "{app}\config.ini"
-//Type: filesandordirs; Name: "{app}\MongoDB"
+;Type: files; Name: "{app}\config.ini"
+;Type: filesandordirs; Name: "{app}\MongoDB"
 
 [Files]     
 Source: {#App_MongoDBLicense}; Flags: dontcopy;
@@ -105,7 +105,7 @@ Source: {#App_FepFile}; DestName: "Fep.msi";  DestDir: {tmp}; Flags: deleteafter
 Source: {#App_DSFile}; DestName: "DataServer.msi";  DestDir: {tmp}; Flags: deleteafterinstall ; Components:"Data\DataServer";
 Source: {#App_DEFile}; DestName: "DataEditor.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"Data\DE";
 Source: {#App_HMIFile}; DestDir:{app};  Flags: deleteafterinstall ignoreversion  external ; Components:"SmartHMI";
-Source: {#App_HISFile}; DestName: "SmartHis.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ;  Components:"HIS\SmartHis";
+Source: {#App_HISFile}; DestName: "SmartHis.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ;  Components:HIS\SmartHis HIS\HisServer ;
 Source: {#App_PiNSx86File}; DestName: "PINS.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"third_party\PiNS"; Check:"not IsWin64";
 Source: {#App_PiNSx64File}; DestName: "PINS.msi";  DestDir: {tmp}; Flags: deleteafterinstall ; Components:"third_party\PiNS"; Check:"IsWin64";
 Source: {#App_PiSDKFile}; DestDir:{tmp}; Flags: deleteafterinstall  ; Components:"third_party\PiSDK";
@@ -672,6 +672,7 @@ begin
   GetInitString();     
   GetVersionInRegistry();
 
+  WizardForm.ComponentsDiskSpaceLabel.Visible := False;
   // catch event click on component
   WizardForm.ComponentsList.OnClickCheck := @ComponentOnClick;   
    
