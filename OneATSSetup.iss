@@ -104,7 +104,7 @@ Source: {#App_MongoDBFile}; DestName: "mongodb.msi";  DestDir: {tmp}; Flags: del
 Source: {#App_FepFile}; DestName: "Fep.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"FEP";
 Source: {#App_DSFile}; DestName: "DataServer.msi";  DestDir: {tmp}; Flags: deleteafterinstall ; Components:"Data\DataServer";
 Source: {#App_DEFile}; DestName: "DataEditor.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"Data\DE";
-Source: {#App_HMIFile}; DestDir:{app};  Flags: deleteafterinstall ignoreversion  external ; Components:"SmartHMI";
+Source: {#App_HMIFile}; DestDir:{app};  Flags: deleteafterinstall ignoreversion   ; Components:"SmartHMI";
 Source: {#App_HISFile}; DestName: "SmartHis.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ;  Components:HIS\SmartHis HIS\HisServer ;
 Source: {#App_PiNSx86File}; DestName: "PINS.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"third_party\PiNS"; Check:"not IsWin64";
 Source: {#App_PiNSx64File}; DestName: "PINS.msi";  DestDir: {tmp}; Flags: deleteafterinstall ; Components:"third_party\PiNS"; Check:"IsWin64";

@@ -51,7 +51,7 @@ config['HIS'] = {'hisversion': '',  'hisfile': ''}
 config['Third-Party'] = {'vsredisx86version': '','vsredisx86file': '','vsredisx64version': '','vsredisx64file': '',
                          'pinsx86version': '','pinsx86file': '','pinsx64version': '', 'pinsx64file': '',
                          'pisdkversion': '','pisdkfile': '',
-                         'opccorex86version': '','opccorex86file': '','opccorex64version': '','opccorex64file': ''  } 
+                         'opccorex86version': '3.00.108','opccorex86file': '','opccorex64version': '3.00.108','opccorex64file': ''  } 
  
 # Update 
 config['Settings']['buildversion'] = timestamp
