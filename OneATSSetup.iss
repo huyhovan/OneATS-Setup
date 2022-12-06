@@ -24,6 +24,7 @@
 #define App_DEFile              ReadIni(App_ConfigFile, "DS_DE", "DEFile", "")
 #define App_HMIVersion          ReadIni(App_ConfigFile, "HMI", "HMIVersion", "")
 #define App_HMIFile             ReadIni(App_ConfigFile, "HMI", "HMIFile", "")
+#define App_HMIName             ReadIni(App_ConfigFile, "HMI", "HMIName", "")
 #define App_HISVersion          ReadIni(App_ConfigFile, "HIS", "HISVersion", "")
 #define App_HISFile             ReadIni(App_ConfigFile, "HIS", "HISFile", "")
 #define App_VSRedisx86Version   ReadIni(App_ConfigFile, "Third-Party", "VSRedisx86Version", "")
@@ -58,28 +59,25 @@ UserInfoPage = 0
 ;LicenseFile=License.txt
 ;ShowLanguageDialog =1
 ArchitecturesInstallIn64BitMode=x64
-ExtraDiskSpaceRequired= 580288000 
-
-
+ExtraDiskSpaceRequired= 580288000         
         
 
-[Languages]
-Name:"english"; MessagesFile: "compiler:Default.isl"
 
 
-[Types]   
-Name: "custom"; Description: "Custom installation"; Flags: iscustom;     
-Name: "full"; Description: "Full installation";     
+[Types]
+Name: "custom"; Description: "Custom installation"; Flags: iscustom
+Name: "full"; Description: "Full installation"     
+
 
 [Components]   
 Name:"third_party"; Description:"Third-party"; Types: full;  Flags: disablenouninstallwarning; 
-Name:third_party\VCRedistributable; Description:"Microsoft VC redistributable 2015-2019"; Types: custom full; Flags: disablenouninstallwarning; 
+Name:third_party\VCRedistributable; Description:"Microsoft VC redistributable 2015-2019"; Types:  full; Flags: disablenouninstallwarning; 
 Name:third_party\PiNS; Description:"Pi Network Systems"; Types: full;  Flags: disablenouninstallwarning;
 Name:third_party\PiSDK; Description:"Pi SDK"; Types:full;  Flags: disablenouninstallwarning; 
 Name:third_party\OpcCore; Description:"Opc-Core-Components-Redistributables ({#App_OpcCorex64Version})"; Types: full;  
 Name:"MongoDB"; Description:"Mongo DB ({#App_MongoDBVersion})"; Types: full;  Flags: disablenouninstallwarning;
 Name:"FEP"; Description: "Fep Server ({#App_FepVersion})"; Types: full;  Flags: disablenouninstallwarning;
-Name:"Data"; Description:"Data Systems"; Types: custom full; Flags: disablenouninstallwarning;
+Name:"Data"; Description:"Data Systems"; Types:  full; Flags: disablenouninstallwarning;
 Name:Data\DataServer; Description:"Data Server ({#App_DSVersion})"; Types: full; Flags: disablenouninstallwarning; 
 Name:Data\DE; Description:"Data Editor ({#App_DEVersion})"; Types: full;  Flags: disablenouninstallwarning; 
 Name:"SmartHMI"; Description: "SmartHMI ({#App_HMIVersion})"; Types:full;   Flags: disablenouninstallwarning;
@@ -121,18 +119,18 @@ Name: "{autoprograms}\{#App_Name}"; Filename: "{app}\{#App_ExeName}";
 
 [Run]  
 
-Filename:"msiexec.exe"; Parameters: " /l*v mdbinstall.log /qn /i ""{tmp}\mongodb.msi"" ADDLOCAL=""ServerNoService""  SHOULD_INSTALL_COMPASS=""0"" INSTALLLOCATION=""{#App_InstallDir}\MongoDB\Server\4.2\"" "; Flags:waituntilterminated; WorkingDir: {tmp};   Components:"MongoDB";  StatusMsg: "Installing OneATS Database Server (MongoDB Server) ..."; BeforeInstall: SetMarqueeProgress(True);    
-Filename:"msiexec.exe"; Parameters:" /qn+ /i ""{tmp}\FEP.msi"" ";  WorkingDir: {tmp}; Components:"FEP"; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing FEP ...";  AfterInstall: SetMarqueeProgress(False);
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataServer.msi"" ";WorkingDir: {tmp}; Components:"Data\DataServer";   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Data Server..."; 
-Filename:"msiexec.exe"; Parameters:" /qn+ /i ""{tmp}\DataEditor.msi"" ";WorkingDir: {tmp}; Components:"Data\DE";   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
-Filename:"{app}\SmartHMIStudio_v4.1.6905.exe";  Parameters:" /VERYSILENT  /NORESTART /ComputerName={code:GetComputerName}";Components:"SmartHMI"; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Smart HMI ...";
+Filename:"msiexec.exe"; Parameters: " /l*v mdbinstall.log /qn /i ""{tmp}\mongodb.msi"" ADDLOCAL=""ServerNoService""  SHOULD_INSTALL_COMPASS=""0"" INSTALLLOCATION=""{#App_InstallDir}\MongoDB\Server\4.2\"" "; Flags:waituntilterminated; WorkingDir: {tmp};   Components:MongoDB;  StatusMsg: "Installing OneATS Database Server (MongoDB Server) ..."; BeforeInstall: SetMarqueeProgress(True);    
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\FEP.msi"" ";  WorkingDir: {tmp}; Components:FEP; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing FEP ...";  AfterInstall: SetMarqueeProgress(False);
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataServer.msi"" ";WorkingDir: {tmp}; Components:Data\DataServer;   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Data Server..."; 
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataEditor.msi"" ";WorkingDir: {tmp}; Components:Data\DE;   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
+Filename:"{app}\{#App_HMIName}";  Parameters:" /VERYSILENT  /NORESTART /ComputerName={code:GetComputerName}";Components:SmartHMI; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Smart HMI ...";
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\SmartHis.msi""  "; WorkingDir: {tmp}; Components: HIS\SmartHis HIS\HisServer;  Flags:waituntilterminated; StatusMsg: "Installing Smart His ..."; 
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PINS.msi"" ";   WorkingDir: {tmp}; Components:"third_party\PiNS"; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi Network Subsystem..."; 
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PiSDK.msi"" ";  WorkingDir: {tmp}; Components:"third_party\PiSDK"; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi SDK ..."; 
-Filename:"{app}\VC_redist.x64.exe"; Parameters:" /QUIET /NORESTART"; Components:"third_party\VCRedistributable"; Flags: waituntilterminated;    StatusMsg: "Installing Visual redistributable 2015-2019 ..."; 
-Filename:"{app}\VC_redist.x86.exe"; Parameters:" /QUIET /NORESTART"; Components:"third_party\VCRedistributable"; Flags: waituntilterminated;  StatusMsg: "Installing Visual redistributable 2015-2019 ..."; 
-Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex64.msi""";  WorkingDir: {tmp}; Components:"third_party\OpcCore"; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"IsWin64";
-Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex86.msi""";  WorkingDir: {tmp}; Components:"third_party\OpcCore"; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"not IsWin64";
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PINS.msi"" ";   WorkingDir: {tmp}; Components:third_party\PiNS; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi Network Subsystem..."; 
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PiSDK.msi"" ";  WorkingDir: {tmp}; Components:third_party\PiSDK; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi SDK ..."; 
+Filename:"{app}\VC_redist.x64.exe"; Parameters:" /QUIET /NORESTART"; Components:third_party\VCRedistributable; Flags: waituntilterminated;    StatusMsg: "Installing Visual redistributable 2015-2019 ..."; 
+Filename:"{app}\VC_redist.x86.exe"; Parameters:" /QUIET /NORESTART"; Components:third_party\VCRedistributable; Flags: waituntilterminated;  StatusMsg: "Installing Visual redistributable 2015-2019 ..."; 
+Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex64.msi""";  WorkingDir: {tmp}; Components:third_party\OpcCore; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"IsWin64";
+Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex86.msi""";  WorkingDir: {tmp}; Components:third_party\OpcCore; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"not IsWin64";
 
 //Windows service ultility
 //Filename: "{cmd}"; Parameters: "/C ""sc config OADataServer displayname= ""OneATS Data Server""";  StatusMsg: "Installing OADataServer. Please wait...";Flags: nowait skipifsilent; Check:"IsDataServerChecked";      
@@ -169,8 +167,8 @@ var
   RadioButtonAcceptMongoDBLicense : TRadioButton; 
   RadioButtonNOAcceptMongoDBLicense : TRadioButton;  
     
-  isMongoChecked, isPINSChecked, isPiSDKChecked, isVSRedisChecked, isDSChecked, isDEChecked, isHMIChecked, isFepChecked: Boolean;
-  isHISSmartHisChecked, isHISServerChecked, isHISDataLinkChecked, isHISODBCChecked, isHISWebServiceChecked, isHISReportViewerChecked : Boolean;
+  //isVSRedisChecked, isDSChecked, isDEChecked, isHMIChecked, isFepChecked: Boolean;
+  //isHISSmartHisChecked, isHISServerChecked, isHISDataLinkChecked, isHISODBCChecked, isHISWebServiceChecked, isHISReportViewerChecked : Boolean;
 
   RadioButtons: array[0..1] of TNewRadioButton;  
   ListMongoDBInstalled :  TArrayOfString;
@@ -293,14 +291,12 @@ var
 begin
   subPath := ExpandConstant('SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\');
 
+  verHMI := '0.0';               
   if not RegQueryStringValue(HKLM, subPath + 'OneATS SmartHMI_is1', 'DisplayVersion', verHMI) then
-        RegQueryStringValue(HKCU, subPath, 'VersionNumber', verHMI);
-  if(verHMI = '') then
-      verHMI := '0.0'  ;
+        RegQueryStringValue(HKCU, subPath, 'VersionNumber', verHMI);     
 
 end;
-
-
+                                                                                        
 function TicksToStr(Value: DWORD): string;
 var
   I: DWORD;
@@ -313,54 +309,48 @@ begin
   I := I div 60;
   Hours := I mod 24;
   Result := Format('%.2d:%.2d:%.2d', [Hours, Minutes, Seconds]);
-end;
+end; 
 
-function  IsMongoDBChecked :Boolean;
-begin
-    Result := False;
-    if(isMongoChecked = True) then
-      Result := True;    
-end;
 function  IsDataServerChecked :Boolean;
 begin
     Result := False;
-    if(isDSChecked = True) then
+    if(WizardIsComponentSelected('Data\DataServer') = True) then
       Result := True;    
 end; 
 function  IsHISServer(value: String) : String;
 begin
     Result := '0';
-    if(isHISServerChecked = True) then
+    if(WizardIsComponentSelected('HIS\HisServer') = True) then
       Result := '1';    
 end; 
 function  IsHISSmartHis(value: String) : String;
 begin
     Result := '0';
-    if(isHISSmartHisChecked = True) then
+    if(WizardIsComponentSelected('HIS\SmartHis') = True) then
       Result := '1';    
 end; 
 function  IsHISDataLink(value: String) :String;
 begin
     Result := '0';
-    if(isHISDataLinkChecked = True) then
+    if(WizardIsComponentSelected('HIS\DataLink') = True) then
      Result := '1';   
 end; 
 function  IsHISODBC(value: String) :String;
 begin
     Result := '0';
-    if(isHISODBCChecked = True) then
+    if(WizardIsComponentSelected('HIS\ODBCDriver') = True) then
       Result := '1';  
 end; 
 function  IsHISWebService(value: String) :String;
 begin
     Result := '0';
-    if(isHISWebServiceChecked = True) then
+    if(WizardIsComponentSelected('HIS\WebService') = True) then
       Result := '1';    
 end; 
 function  IsHISReportViewer(value: String) :String;
 begin
     Result := '0';
-    if(isHISReportViewerChecked = True) then
+    if(WizardIsComponentSelected('HIS\ReportViewer') = True) then
       Result := '1';  
 end; 
 
@@ -398,7 +388,7 @@ begin
   Result := false;
   RegGetSubkeyNames(HKEY_LOCAL_MACHINE, 'SOFTWARE\MongoDB\Server', ListMongoDBInstalled);
   For i:= 0 to (Length(ListMongoDBInstalled) -1) do
-    if ((isMongoChecked = true) and( ListMongoDBInstalled[i] = '4.2')) then
+    if ((WizardIsComponentSelected('MongoDB')) and( ListMongoDBInstalled[i] = '4.2')) then
         Result := True;    
 end;
 
@@ -574,90 +564,12 @@ begin
 end;                     
   
 procedure ComponentOnClick(Sender: TObject); 
-begin  
-  isPINSChecked :=False;
-  if WizardIsComponentSelected('third_party\PiNS') then     
-  begin    
-      isPINSChecked := True;    
-  end;
-
-  isPiSDKChecked :=False;
-  if WizardIsComponentSelected('third_party\PiSDK') then     
-  begin    
-      isPiSDKChecked := True;    
-  end;
-
-  isVSRedisChecked :=False;
-  if WizardIsComponentSelected('third_party\VCRedistributable') then     
-  begin    
-      isVSRedisChecked := True;    
-  end;
-
-  isMongoChecked :=False;
-  if WizardIsComponentSelected('MongoDB') then     
-  begin
-    isMongoChecked := True;    
-  end;
-
-  isFepChecked :=False;
-  if WizardIsComponentSelected('FEP') then     
-  begin
-    isFepChecked := True;    
-  end;
-
-   isDSChecked :=False;
-  if WizardIsComponentSelected('Data\DataServer') then     
-  begin
-    isDSChecked := True;    
-  end;
-
-  isDEChecked :=False;
-  if WizardIsComponentSelected('Data\DE') then     
-  begin
-    isDEChecked := True;    
-  end;
-
-  isHMIChecked :=False;
-  if WizardIsComponentSelected('SmartHMI') then     
-  begin
-    isHMIChecked := True;    
-  end;
-
-   isHISServerChecked :=False;
-  if WizardIsComponentSelected('HIS\HisServer') then     
-  begin
-    isHISServerChecked := True;    
-  end;
-
-  isHISSmartHisChecked :=False;
-  if WizardIsComponentSelected('HIS\SmartHis') then     
-  begin
-    isHISSmartHisChecked := True;    
-  end;
-
-  isHISODBCChecked := False;
-  if WizardIsComponentSelected('HIS\ODBCDriver') then     
-  begin
-    isHISODBCChecked := True;    
-  end;
-
-  isHISDataLinkChecked :=False;
-  if WizardIsComponentSelected('HIS\DataLink') then     
-  begin
-    isHISDataLinkChecked := True;    
-  end;
-
-  isHISWebServiceChecked :=False;
-  if WizardIsComponentSelected('HIS\WebService') then     
-  begin
-    isHISWebServiceChecked := True;    
-  end;
-
-  isHISReportViewerChecked :=False;
+begin          
+  {isHISReportViewerChecked :=False;
   if WizardIsComponentSelected('HIS\ReportViewer') then     
   begin
     isHISReportViewerChecked := True;    
-  end;
+  end;   }
 end;
 
 
@@ -670,7 +582,7 @@ var
 begin       
   //Init String
   GetInitString();     
-  GetVersionInRegistry();
+  GetVersionInRegistry();            
 
   WizardForm.ComponentsDiskSpaceLabel.Visible := False;
   // catch event click on component
@@ -756,9 +668,9 @@ end;
 function ShouldSkipPage(PageID: Integer): Boolean;
 begin
    Result := False;   
-   if((PageID =  MongoDirPage.ID) and (isMongoChecked= False)) then
+   if((PageID =  MongoDirPage.ID) and (not WizardIsComponentSelected('MongoDB'))) then
       Result := True;
-   if ((PageID = LicenseMongoDBPage.ID) and (isMongoChecked= False)) then
+   if ((PageID = LicenseMongoDBPage.ID) and (not WizardIsComponentSelected('MongoDB'))) then
       Result := True;   
    if (PageID = wpSelectDir) then
       Result := True;        
@@ -774,7 +686,7 @@ begin
 
   if CurPageID = wpSelectComponents then
   begin
-     if(isMongoChecked= True) then
+     if(WizardIsComponentSelected('MongoDB')) then
      begin
           arrMongoDB := GetListSubKeyMongoDB();
           if(GetArrayLength(arrMongoDB) > 0) then
@@ -794,8 +706,9 @@ begin
           end;
      end;
 
-      if(isHMIChecked = True) then
+      if(WizardIsComponentSelected('SmartHMI') = True) then
       begin
+          GetVersionInRegistry();
           if(CompareVersion(HMIVersion, verHMI) < 1) then
           begin
             MsgBox('You already installed current or newer  HMI version', mbInformation, MB_OK);

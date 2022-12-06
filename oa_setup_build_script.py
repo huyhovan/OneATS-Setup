@@ -46,7 +46,7 @@ config['Settings'] = {'buildversion':timestamp }
 config['MongoDB'] = {'mongodblicense': '' , 'mongodbinitfolder':''  ,'mongodbversion': '4.2.23', 'mongodbfile': ''}          
 config['FEP'] = {'fepversion': '',  'fepfile': ''}             
 config['DS_DE'] = {'dsversion': '', 'dsfile': '', 'deversion': '','defile': ''}  
-config['HMI'] = {'hmiversion': '',  'hmifile': ''} 
+config['HMI'] = {'hmiversion': '',  'hmifile': '', 'hminame': ''} 
 config['HIS'] = {'hisversion': '',  'hisfile': ''} 
 config['Third-Party'] = {'vsredisx86version': '','vsredisx86file': '','vsredisx64version': '','vsredisx64file': '',
                          'pinsx86version': '','pinsx86file': '','pinsx64version': '', 'pinsx64file': '',
@@ -82,6 +82,7 @@ def UpdateConfigFile(fileName):
     if 'hmi' in fileName.lower():
         config['HMI']['hmiversion']= (re.findall('[0-9.]*[0-9]+', fileName)[0])
         config['HMI']['hmifile']= str(dir_path.file_path)+ "\\" + fileName
+        config['HMI']['hminame']= fileName
         
     if 'his' in fileName.lower():
         config['HIS']['hisversion']= (re.findall('[0-9.]*[0-9]+', fileName)[0])
