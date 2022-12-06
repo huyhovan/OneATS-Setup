@@ -59,7 +59,8 @@ UserInfoPage = 0
 ;LicenseFile=License.txt
 ;ShowLanguageDialog =1
 ArchitecturesInstallIn64BitMode=x64
-ExtraDiskSpaceRequired= 580288000         
+ExtraDiskSpaceRequired= 580288000     
+SetupLogging = yes    
         
 
 
@@ -123,7 +124,7 @@ Filename:"msiexec.exe"; Parameters: " /l*v mdbinstall.log /qn /i ""{tmp}\mongodb
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\FEP.msi"" ";  WorkingDir: {tmp}; Components:FEP; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing FEP ...";  AfterInstall: SetMarqueeProgress(False);
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataServer.msi"" ";WorkingDir: {tmp}; Components:Data\DataServer;   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Data Server..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataEditor.msi"" ";WorkingDir: {tmp}; Components:Data\DE;   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
-Filename:"{app}\{#App_HMIName}";  Parameters:" /VERYSILENT  /NORESTART /ComputerName={code:GetComputerName}";Components:SmartHMI; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Smart HMI ...";
+Filename:"{app}\{#App_HMIName}";  Parameters:" /VERYSILENT  /NORESTART ";Components:SmartHMI; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Smart HMI ...";
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\SmartHis.msi""  "; WorkingDir: {tmp}; Components: HIS\SmartHis HIS\HisServer;  Flags:waituntilterminated; StatusMsg: "Installing Smart His ..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PINS.msi"" ";   WorkingDir: {tmp}; Components:third_party\PiNS; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi Network Subsystem..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PiSDK.msi"" ";  WorkingDir: {tmp}; Components:third_party\PiSDK; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi SDK ..."; 
@@ -709,6 +710,8 @@ begin
       if(WizardIsComponentSelected('SmartHMI') = True) then
       begin
           GetVersionInRegistry();
+          Log('MODULE VERSION: ' + HMIVersion);
+          Log('REGISTRY VERSION : ' +verHMI);
           if(CompareVersion(HMIVersion, verHMI) < 1) then
           begin
             MsgBox('You already installed current or newer  HMI version', mbInformation, MB_OK);
