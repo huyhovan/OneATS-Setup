@@ -43,7 +43,6 @@
 #define App_OpcCorex64File      ReadIni(App_ConfigFile, "Third-Party", "OpcCorex64File", "")
 
 
-
 [Setup]
 AppId = {{#App_ID}
 AppName = {#App_Name}
@@ -172,8 +171,7 @@ var
   //isHISSmartHisChecked, isHISServerChecked, isHISDataLinkChecked, isHISODBCChecked, isHISWebServiceChecked, isHISReportViewerChecked : Boolean;
 
   RadioButtons: array[0..1] of TNewRadioButton;  
-  ListMongoDBInstalled :  TArrayOfString;
-
+  ListMongoDBInstalled :  TArrayOfString;     
     
   StartTick: DWORD;  LastUpdate: DWORD;
   PercentLabel: TNewStaticText;
@@ -181,62 +179,8 @@ var
   //RemainingLabel: TNewStaticText;
 
   // version string variable
-  verFep, verDS, verDE, verHMI, verHis : String;
+  verFep, verDS, verDE, verHMI, verHis : String;          
 
-  // string variable Initialize
-  BuildVersion : String;
-  MongoDBVersion, MongoDBFile, MongoDBLicense, MongoDBInitFolder : String;
-  FepVersion, FepFile : String;
-  DSVersion, DSFile : String;
-  DEVersion, DEFile: String;
-  HMIVersion, HMIFile: String;
-  HISVersion, HISFile : String;
-  VSRedisx86Version, VSRedisx86File, VSRedisx64Version, VSRedisx64File: String;
-  PiNSx86Version, PiNSx86File, PiNSx64Version, PiNSx64File, PiSDKVersion, PiSDKFile : String;
-  OpcCorex86Version, OpcCorex86File, OpcCorex64Version, OpcCorex64File: String;            
-
-
-procedure  GetInitString();
-begin
-  BuildVersion :=  GetIniString('Settings', 'BuidVersion','','{#SourcePath}\config.ini'); 
-   
-  MongoDBVersion :=  GetIniString('MongoDB', 'MongoDBVersion','', '{#SourcePath}\config.ini');
-  MongoDBFile :=  GetIniString('MongoDB', 'MongoDBFile','', '{#SourcePath}\config.ini');
-  MongoDBLicense :=  GetIniString('MongoDB', 'MongoDBLicense','', '{#SourcePath}\config.ini');
-  MongoDBInitFolder :=  GetIniString('MongoDB', 'MongoDBInitFolder','', '{#SourcePath}\config.ini');  
-  
-  FepVersion :=  GetIniString('Fep', 'FepVersion','', '{#SourcePath}\config.ini');
-  FepFile :=  GetIniString('Fep', 'FepFile','', '{#SourcePath}\config.ini');   
-  
-  DSVersion :=  GetIniString('DS_DE', 'DSVersion','', '{#SourcePath}\config.ini');
-  DSFile :=  GetIniString('DS_DE', 'DSFile','', '{#SourcePath}\config.ini');
-  DEVersion :=  GetIniString('DS_DE', 'DEVersion','', '{#SourcePath}\config.ini');
-  DEFile :=  GetIniString('DS_DE', 'DEFile','', '{#SourcePath}\config.ini');
-  
-  HMIVersion :=  GetIniString('HMI', 'HMIVersion','', '{#SourcePath}\config.ini');
-  HMIFile :=  GetIniString('HMI', 'HMIFile','', '{#SourcePath}\config.ini');
-  
-  HISVersion :=  GetIniString('HIS', 'HISVersion','', '{#SourcePath}\config.ini');
-  HISFile :=  GetIniString('HIS', 'HISFile','', '{#SourcePath}\config.ini'); 
-  
-  VSRedisx86Version := GetIniString('Third-Party', 'VSRedisx86Version','', '{#SourcePath}\config.ini');  
-  VSRedisx86File := GetIniString('Third-Party', 'VSRedisx86File','', '{#SourcePath}\config.ini');
-  VSRedisx64Version := GetIniString('Third-Party', 'VSRedisx64Version','', '{#SourcePath}\config.ini'); 
-  VSRedisx64File := GetIniString('Third-Party', 'VSRedisx64File','', '{#SourcePath}\config.ini');
-  
-  PiNSx86Version :=  GetIniString('Third-Party', 'PiNSx86Version','', '{#SourcePath}\config.ini');
-  PiNSx86File :=  GetIniString('Third-Party', 'PiNSx86File','', '{#SourcePath}\config.ini');
-  PiNSx64Version := GetIniString('Third-Party', 'PiNSx64Version','', '{#SourcePath}\config.ini');
-  PiNSx64File := GetIniString('Third-Party', 'PiNSx64File','', '{#SourcePath}\config.ini');
-  PiSDKVersion := GetIniString('Third-Party', 'PiSDKVersion','', '{#SourcePath}\config.ini');
-  PiSDKFile := GetIniString('Third-Party', 'PiSDKFile','', '{#SourcePath}\config.ini');
-  
-  OpcCorex86Version := GetIniString('Third-Party', 'OpcCorex86Version','', '{#SourcePath}\config.ini');
-  OpcCorex86File :=  GetIniString('Third-Party', 'OpcCorex86File','', '{#SourcePath}\config.ini');
-  OpcCorex64Version :=  GetIniString('Third-Party', 'OpcCorex64Version','', '{#SourcePath}\config.ini');
-  OpcCorex64File := GetIniString('Third-Party', 'OpcCorex64File','', '{#SourcePath}\config.ini');  
-
-end;
 
 // Version Utility
 function CompareVersion(V1, V2: string): Integer;
@@ -581,8 +525,7 @@ var
   LicenseFilePath: string;
   URLLabelMongoLicense :TNewStaticText;
 begin       
-  //Init String
-  GetInitString();     
+   
   GetVersionInRegistry();            
 
   WizardForm.ComponentsDiskSpaceLabel.Visible := False;
@@ -710,9 +653,10 @@ begin
       if(WizardIsComponentSelected('SmartHMI') = True) then
       begin
           GetVersionInRegistry();
-          Log('MODULE VERSION: ' + HMIVersion);
-          Log('REGISTRY VERSION : ' +verHMI);
-          if(CompareVersion(HMIVersion, verHMI) < 1) then
+          
+          Log('MODULE VERSION(precompile): ' + ExpandConstant('{#App_HMIVersion}'));
+          Log('REGISTRY VERSION: ' +verHMI);
+          if(CompareVersion(ExpandConstant('{#App_HMIVersion}'), verHMI) < 1) then
           begin
             MsgBox('You already installed current or newer  HMI version', mbInformation, MB_OK);
             Result := False;
@@ -777,110 +721,6 @@ begin
     //  Format('Remaining: %s', [TicksToStr(
     //    ((CurTick - StartTick) / CurProgress) * (MaxProgress - CurProgress))]);
   end;
-end;
-
-//
-function GetStrMongoDBLicense(Value : String) : String;
-begin           
-    Result := MongoDBLicense;
-end;
-function GetStrMongoDBInitFolder(Value : String) : String;
-begin       
-    Result := MongoDBInitFolder;
-end;
-function GetStrMongoDBVersion(Value : String) : String;
-begin   
-    Result := MongoDBVersion;
-end;
-function GetStrMongoDBFile(Value : String) : String;
-begin   
-    Result := MongoDBFile;
-end;
-
-//
-function GetStrFepVersion(Value : String) : String;
-begin   
-    Result := FepVersion;
-end;
-function GetStrFepFile(Value : String) : String;
-begin   
-    Result := FepFile;
-end;
-
-//
-function GetStrDSVersion(Value : String) : String;
-begin   
-    Result := DSVersion;
-end;
-function GetStrDSFile(Value : String) : String;
-begin   
-    Result := DSFile;
-end;
-function GetStrDEVersion(Value : String) : String;
-begin   
-    Result := DEVersion;
-end;
-function GetStrDEFile(Value : String) : String;
-begin   
-    Result := DEFile;
-end;
-
-//
-function GetStrHMIVersion(Value : String) : String;
-begin   
-    Result := HMIVersion;
-end;
-function GetStrHMIFile(Value : String) : String;
-begin   
-    Result := HMIFile;
-end;
-
-//
-function GetStrHISVersion(Value : String) : String;
-begin   
-    Result := HISVersion;
-end;
-function GetStrHISFile(Value : String) : String;
-begin   
-    Result := HISFile;
-end;
-
-//
-function GetStrVSRedisx86File(Value : String) : String;
-begin   
-    Result := VSRedisx86File;
-end;
-function GetStrVSRedisx64File(Value : String) : String;
-begin   
-    Result := VSRedisx64File;
-end;
-function GetStrPiNSx86File(Value : String) : String;
-begin   
-    Result := PiNSx86File;
-end;
-function GetStrPiNSx64File(Value : String) : String;
-begin   
-    Result := PiNSx64File;
-end;
-function GetStrPiSDKFile(Value : String) : String;
-begin   
-    Result := PiSDKFile;
-end;
-function GetStrOpcCorex86Version(Value : String) : String;
-begin   
-    Result := OpcCorex86Version;
-end;
-function GetStrOpcCorex86File(Value : String) : String;
-begin   
-    Result := OpcCorex86File;
-end;
-function GetStrOpcCorex64Version(Value : String) : String;
-begin   
-    Result := OpcCorex64Version;
-end;
-function GetStrOpcCorex64File(Value : String) : String;
-begin   
-    Result := OpcCorex64File;
 end;
 
 
