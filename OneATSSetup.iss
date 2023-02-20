@@ -83,11 +83,12 @@ Name:Data\DE; Description:"Data Editor ({#App_DEVersion})"; Types: full;  Flags:
 Name:"SmartHMI"; Description: "SmartHMI ({#App_HMIVersion})"; Types:full;   Flags: disablenouninstallwarning;
 Name:"HIS"; Description: "HIS systems ({#App_HISVersion})"; Types:full;  Flags:  disablenouninstallwarning;
 Name:"HIS\HisServer"; Description: "His Server"; Types:full;   Flags:  disablenouninstallwarning ;
-Name:"HIS\SmartHis"; Description: "SmartHis Administrator"; Types:full;  Flags: disablenouninstallwarning;
+Name:"HIS\AdminTools"; Description: "Admin Tools"; Types:full;  Flags: disablenouninstallwarning;
 Name:"HIS\DataLink"; Description: "Data Link"; Types:full;   Flags: disablenouninstallwarning;
 Name:"HIS\ODBCDriver"; Description: "ODBC Driver"; Types:full;   Flags: disablenouninstallwarning;  
-Name:"HIS\WebService"; Description: "Web Service"; Types:full;   Flags: disablenouninstallwarning;  
-Name:"HIS\ReportViewer"; Description: "Report Viewer"; Types:full;   Flags: disablenouninstallwarning;  
+Name:"HIS\WebService"; Description: "Web Service"; Flags: disablenouninstallwarning;  
+Name:"HIS\ReportViewer"; Description: "Report Viewer"; Types:full;   Flags: disablenouninstallwarning; 
+Name:"HIS\DataClient"; Description: "Data Client"; Types: full; Flags: disablenouninstallwarning;
                                                                                                              
  
 
@@ -97,17 +98,17 @@ Name:"HIS\ReportViewer"; Description: "Report Viewer"; Types:full;   Flags: disa
 
 [Files]     
 Source: {#App_MongoDBLicense}; Flags: dontcopy;
-Source: "{#App_MongoDBInitFolder}\*";  DestDir:"{app}\MongoDB\MongoDB Initiate"; Flags: ignoreversion recursesubdirs createallsubdirs ;   Components:"MongoDB";
+Source: "{#App_MongoDBInitFolder}\*";  DestDir:"{app}\MongoDB\MongoDB Initiate"; Flags:  ignoreversion recursesubdirs createallsubdirs deleteafterinstall;   Components:"MongoDB";
 Source: {#App_MongoDBFile}; DestName: "mongodb.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"MongoDB";
 Source: {#App_FepFile}; DestName: "Fep.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"FEP";
 Source: {#App_DSFile}; DestName: "DataServer.msi";  DestDir: {tmp}; Flags: deleteafterinstall ; Components:"Data\DataServer";
 Source: {#App_DEFile}; DestName: "DataEditor.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"Data\DE";
 Source: {#App_HMIFile}; DestDir:{app};  Flags: deleteafterinstall ignoreversion   ; Components:"SmartHMI";
-Source: {#App_HISFile}; DestName: "SmartHis.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ;  Components:HIS\SmartHis HIS\HisServer ;
+Source: {#App_HISFile}; DestName: "SmartHis.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ;  Components:HIS\HisServer HIS\AdminTools HIS\DataLink HIS\ODBCDriver HIS\WebService HIS\ReportViewer HIS\DataClient ;
 Source: {#App_PiNSx86File}; DestName: "PINS.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"third_party\PiNS"; Check:"not IsWin64";
 Source: {#App_PiNSx64File}; DestName: "PINS.msi";  DestDir: {tmp}; Flags: deleteafterinstall ; Components:"third_party\PiNS"; Check:"IsWin64";
 Source: {#App_PiSDKFile}; DestDir:{tmp}; Flags: deleteafterinstall  ; Components:"third_party\PiSDK";
-Source: {#App_VSRedisx86File}; DestDir:{app}; Flags:deleteafterinstall ignoreversion ; Components:"third_party\VCRedistributable";
+Source: {#App_VSRedisx86File}; DestDir:{app}; Flags: deleteafterinstall ignoreversion ; Components:"third_party\VCRedistributable";
 Source: {#App_VSRedisx64File}; DestDir:{app}; Flags: deleteafterinstall ignoreversion ; Components:"third_party\VCRedistributable";
 Source: {#App_OpcCorex64File}; DestName:"OpcRedistributablex64.msi"; DestDir :{tmp}; Flags: deleteafterinstall ; Components: "third_party\OpcCore"; 
 Source: {#App_OpcCorex86File}; DestName:"OpcRedistributablex86.msi"; DestDir :{tmp}; Flags: deleteafterinstall ; Components: "third_party\OpcCore"; Check:" not IsWin64";
@@ -124,7 +125,7 @@ Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\FEP.msi"" ";  WorkingDir: {t
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataServer.msi"" ";WorkingDir: {tmp}; Components:Data\DataServer;   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Data Server..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataEditor.msi"" ";WorkingDir: {tmp}; Components:Data\DE;   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
 Filename:"{app}\{#App_HMIName}";  Parameters:" /VERYSILENT  /NORESTART ";Components:SmartHMI; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Smart HMI ...";
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\SmartHis.msi""  "; WorkingDir: {tmp}; Components: HIS\SmartHis HIS\HisServer;  Flags:waituntilterminated; StatusMsg: "Installing Smart His ..."; 
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\SmartHis.msi"" ADDLOCAL=""{code:GetStringInfoHisSetup}"" "; WorkingDir: {tmp}; Components: HIS\HisServer HIS\AdminTools HIS\DataLink HIS\ODBCDriver HIS\WebService HIS\ReportViewer HIS\DataClient;  Flags:waituntilterminated; StatusMsg: "Installing Smart His ..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PINS.msi"" ";   WorkingDir: {tmp}; Components:third_party\PiNS; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi Network Subsystem..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PiSDK.msi"" ";  WorkingDir: {tmp}; Components:third_party\PiSDK; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi SDK ..."; 
 Filename:"{app}\VC_redist.x64.exe"; Parameters:" /QUIET /NORESTART"; Components:third_party\VCRedistributable; Flags: waituntilterminated;    StatusMsg: "Installing Visual redistributable 2015-2019 ..."; 
@@ -142,8 +143,8 @@ Filename: "{cmd}"; Parameters: "/C ""powershell ""(Get-Content -Path '{#App_Inst
 Filename: "{cmd}"; Parameters: "/C ""copy ""{#App_InstallDir}\MongoDB\MongoDB Initiate\oakeyfile.key""  ""{#App_InstallDir}\MongoDB\Server\4.2\bin\"""""; Flags: nowait skipifsilent;  check:"CheckInstallMongoDBsuccess";  
 Filename: "{cmd}"; Parameters: "/C ""robocopy ""{app}\MongoDB\MongoDB Initiate\data"" ""{code:GetMongoDataDir}"" /s /e	 """; Flags: waituntilterminated skipifsilent; Check:"IsMongoDataDirEmpty";
 Filename: "{cmd}"; Parameters: "/C ""sc create ""OADatabaseService""  binPath= ""\""{#App_InstallDir}\MongoDB\Server\4.2\bin\mongod.exe\"" --config \""{#App_InstallDir}\MongoDB\Server\4.2\bin\mongod.cfg\"" --dbpath \""{code:GetMongoDataDir}\"" --logpath \""{code:GetMongoLogDir}\mongod.log\""  --service"" DisplayName= ""OneATS DatabaseService""  start= ""auto"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess";
-Filename: "{cmd}"; Parameters: "/C ""sc config OADatabaseService displayname= ""OneATS Database Service"""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess"; 
-Filename: "{cmd}"; Parameters: "/C ""sc description OADatabaseService  ""OneATS Database Service (MongoDB Server)"""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess";
+Filename: "{cmd}"; Parameters: "/C ""sc config OADatabaseService displayname= ""OneATS Database Service"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess"; 
+Filename: "{cmd}"; Parameters: "/C ""sc description OADatabaseService ""OneATS Database Service (MongoDB Server)"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess";
 //Filename: "{cmd}"; Parameters: "/C ""sc start OADatabaseService"""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess";  
 
 
@@ -179,7 +180,10 @@ var
   //RemainingLabel: TNewStaticText;
 
   // version string variable
-  verFep, verDS, verDE, verHMI, verHis : String;          
+  verFep, verDS, verDE, verHMI, verHis : String;   
+  
+  // for HIS featured setup
+  infoHisSetup : String;       
 
 
 // Version Utility
@@ -298,6 +302,34 @@ begin
     if(WizardIsComponentSelected('HIS\ReportViewer') = True) then
       Result := '1';  
 end; 
+
+function GetStringInfoHisSetup(value: string) : string;
+var char : String;
+begin     
+   char := ',';
+   if(WizardIsComponentSelected('HIS\HisServer') = True) then
+     infoHisSetup := infoHisSetup + 'ServerFeature';
+   if(WizardIsComponentSelected('HIS\AdminTools') = True) then
+     infoHisSetup := infoHisSetup + ',AdminToolFeature';
+   if(WizardIsComponentSelected('HIS\DataLink') = True) then
+     infoHisSetup := infoHisSetup + ',DataLinkFeature';
+   if(WizardIsComponentSelected('HIS\ODBCDriver') = True) then
+     infoHisSetup := infoHisSetup +  ',ODBCDriverFeature';
+    if(WizardIsComponentSelected('HIS\WebService') = True) then
+     infoHisSetup := infoHisSetup +  ',WebServiceFeature';
+    if(WizardIsComponentSelected('HIS\ReportViewer') = True) then
+      infoHisSetup := infoHisSetup + ',ReportViewerFeature';
+     if(WizardIsComponentSelected('HIS\DataClient') = True) then
+      infoHisSetup := infoHisSetup + ',DataClientFeature';
+   //if(IsHISDataClient)
+   //   infoHisSetup += 'DataClientFeature';     
+
+   if(Pos(',', infoHisSetup)=1) then     
+      Delete(infoHisSetup, 1, 1);
+   
+   Result := infoHisSetup;
+
+end;
 
 function GetComputerName(Value: string): string;
 begin

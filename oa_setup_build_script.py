@@ -22,7 +22,7 @@ timestamp = timestamp[-8:]
 
 # folder path
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-dir_thirdparty = dir_path.file_path+ '\Third-party'
+dir_thirdparty = dir_path.file_path+ '\\Third-party'
 dir_innoscript = (os.path.join(__location__, 'OneATSSetup.iss'))
 dir_configFile = (os.path.join(__location__, 'config.ini'))
 
@@ -34,16 +34,22 @@ res = []
 for path in os.listdir(str(dir_path.file_path)):
     # check if current path is a file
     if os.path.isfile(os.path.join(str(dir_path.file_path), path)):
+        res.append(path)        
+   
+for path in os.listdir(dir_thirdparty):
+     if os.path.isfile(os.path.join(str(dir_thirdparty), path)):
         res.append(path)
+
         
-#print(res)
+print(res)
+
  
 # Config file
 config= configparser.ConfigParser()
 
 # Create config.ini file
 config['Settings'] = {'buildversion':timestamp }
-config['MongoDB'] = {'mongodblicense': '' , 'mongodbinitfolder':''  ,'mongodbversion': '4.2.23', 'mongodbfile': ''}          
+config['MongoDB'] = {'mongodblicense': '' , 'mongodbinitfolder':''  ,'mongodbversion': '4.2.5', 'mongodbfile': ''}          
 config['FEP'] = {'fepversion': '',  'fepfile': ''}             
 config['DS_DE'] = {'dsversion': '', 'dsfile': '', 'deversion': '','defile': ''}  
 config['HMI'] = {'hmiversion': '',  'hmifile': '', 'hminame': ''} 
@@ -88,9 +94,9 @@ def UpdateConfigFile(fileName):
         config['HIS']['hisversion']= (re.findall('[0-9.]*[0-9]+', fileName)[0])
         config['HIS']['hisfile']= str(dir_path.file_path)+ "\\" + fileName  
         
-    if('mongodb' in fileName.lower()):
-        #config['MongoDB']['mongodbversion']= "4.2.23"
-        config['MongoDB']['mongodbfile']= str(dir_path.file_path)+ "\\" + fileName  
+    if('mongodb-win' in fileName.lower()):
+        #config['MongoDB']['mongodbversion']= "4.2.5"
+        config['MongoDB']['mongodbfile']= dir_thirdparty + "\\" + fileName  
         
     
 for filename in res:
