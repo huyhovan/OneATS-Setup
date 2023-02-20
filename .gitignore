@@ -2,6 +2,7 @@
 
 *.exe
 *.msi
+*.docx
 !**/Third-party/*.txt
 **/Third-party/
 config.ini
