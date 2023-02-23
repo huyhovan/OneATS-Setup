@@ -1,4 +1,3 @@
-
 #define App_ID "{2C1AA803-8082-4279-805C-BC7BD756DF8A}"
 #define App_CopyRight "Copyright (C)"
 #define App_Name "OneATS Setup"  
@@ -6,7 +5,7 @@
 #define App_URL "ats.com.vn"
 #define App_ExeName "OneATSSetup"
 #define App_InstallDir "{autopf}\ATS" 
-#define App_Mongo4_2Dir  "{autopf}\ATS\MongoDB\Server\4.2"
+#define App_Mongo4_2Dir  "{autopf}\MongoDB\Server\4.2"
 
 
 #define App_ConfigFile SourcePath  + "\config.ini"    
@@ -120,7 +119,7 @@ Name: "{autoprograms}\{#App_Name}"; Filename: "{app}\{#App_ExeName}";
 
 [Run]  
 
-Filename:"msiexec.exe"; Parameters: " /l*v mdbinstall.log /qn /i ""{tmp}\mongodb.msi"" ADDLOCAL=""ServerNoService""  SHOULD_INSTALL_COMPASS=""0"" INSTALLLOCATION=""{#App_InstallDir}\MongoDB\Server\4.2\"" "; Flags:waituntilterminated; WorkingDir: {tmp};   Components:MongoDB;  StatusMsg: "Installing OneATS Database Server (MongoDB Server) ..."; BeforeInstall: SetMarqueeProgress(True);    
+Filename:"msiexec.exe"; Parameters: " /l*v mdbinstall.log /qn /i ""{tmp}\mongodb.msi"" ADDLOCAL=""ServerNoService""  SHOULD_INSTALL_COMPASS=""0"" INSTALLLOCATION=""{autopf}\MongoDB\Server\4.2\"" "; Flags:waituntilterminated; WorkingDir: {tmp};   Components:MongoDB;  StatusMsg: "Installing Database Server (MongoDB Server) ..."; BeforeInstall: SetMarqueeProgress(True);    
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\FEP.msi"" ";  WorkingDir: {tmp}; Components:FEP; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing FEP ...";  AfterInstall: SetMarqueeProgress(False);
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataServer.msi"" ";WorkingDir: {tmp}; Components:Data\DataServer;   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Data Server..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataEditor.msi"" ";WorkingDir: {tmp}; Components:Data\DE;   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
@@ -133,18 +132,19 @@ Filename:"{app}\VC_redist.x86.exe"; Parameters:" /QUIET /NORESTART"; Components:
 Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex64.msi""";  WorkingDir: {tmp}; Components:third_party\OpcCore; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"IsWin64";
 Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex86.msi""";  WorkingDir: {tmp}; Components:third_party\OpcCore; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"not IsWin64";
 
-//Windows service ultility
+;Windows service ultility
 //Filename: "{cmd}"; Parameters: "/C ""sc config OADataServer displayname= ""OneATS Data Server""";  StatusMsg: "Installing OADataServer. Please wait...";Flags: nowait skipifsilent; Check:"IsDataServerChecked";      
 //Filename: "{cmd}"; Parameters: "/C ""sc description OADataServer  ""OneATS Real-time Data Processing"""; Flags: nowait skipifsilent; Check:"IsDataServerChecked";  
 //Filename: "{cmd}"; Parameters: "/C ""sc start OADataServer"""; StatusMsg: "Starting OADataServer ..."; Flags: nowait skipifsilent;   Check:"IsDataServerChecked";
 Filename: "{cmd}"; Parameters: "/C ""md ""{code:GetMongoDataDir}"" ""{code:GetMongoLogDir}"" """; Flags: waituntilterminated skipifsilent;  check:"CheckInstallMongoDBsuccess";  
-Filename: "{cmd}"; Parameters: "/C ""powershell copy-item '{app}\MongoDB\MongoDB Initiate\mongod.cfg' '{#App_InstallDir}\MongoDB\Server\4.2\bin'  -force"""; Flags: waituntilterminated skipifsilent;  check:"CheckInstallMongoDBsuccess";  
-Filename: "{cmd}"; Parameters: "/C ""powershell ""(Get-Content -Path '{#App_InstallDir}\MongoDB\Server\4.2\bin\mongod.cfg') | Foreach-Object {{$_.replace('D:\db\data','{code:GetMongoDataDir}').replace('D:\db\log','{code:GetMongoLogDir}')} | Out-File -encoding ASCII 'C:\Program Files\ATS\MongoDB\Server\4.2\bin\mongod.cfg'"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess"; 
-Filename: "{cmd}"; Parameters: "/C ""copy ""{#App_InstallDir}\MongoDB\MongoDB Initiate\oakeyfile.key""  ""{#App_InstallDir}\MongoDB\Server\4.2\bin\"""""; Flags: nowait skipifsilent;  check:"CheckInstallMongoDBsuccess";  
+Filename: "{cmd}"; Parameters: "/C ""powershell copy-item '{app}\MongoDB\MongoDB Initiate\mongod.cfg' '{autopf}\MongoDB\Server\4.2\bin'  -force"""; Flags: waituntilterminated skipifsilent;  check:"CheckInstallMongoDBsuccess";  
+Filename: "{cmd}"; Parameters: "/C ""powershell ""(Get-Content -Path '{autopf}\MongoDB\Server\4.2\bin\mongod.cfg') | Foreach-Object {{$_.replace('D:\db\data','{code:GetMongoDataDir}').replace('D:\db\log','{code:GetMongoLogDir}')} | Out-File -encoding ASCII 'C:\Program Files\MongoDB\Server\4.2\bin\mongod.cfg'"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess"; 
+Filename: "{cmd}"; Parameters: "/C ""copy ""{app}\MongoDB\MongoDB Initiate\oakeyfile.key""  ""{autopf}\MongoDB\Server\4.2\bin\"""""; Flags: nowait skipifsilent;  check:"CheckInstallMongoDBsuccess";
+;Filename: "{cmd}"; Parameters: "/C ""sc stop MongoDB"""; Flags: waituntilterminated skipifsilent; Check:"CheckInstallMongoDBsuccess";    
 Filename: "{cmd}"; Parameters: "/C ""robocopy ""{app}\MongoDB\MongoDB Initiate\data"" ""{code:GetMongoDataDir}"" /s /e	 """; Flags: waituntilterminated skipifsilent; Check:"IsMongoDataDirEmpty";
-Filename: "{cmd}"; Parameters: "/C ""sc create ""OADatabaseService""  binPath= ""\""{#App_InstallDir}\MongoDB\Server\4.2\bin\mongod.exe\"" --config \""{#App_InstallDir}\MongoDB\Server\4.2\bin\mongod.cfg\"" --dbpath \""{code:GetMongoDataDir}\"" --logpath \""{code:GetMongoLogDir}\mongod.log\""  --service"" DisplayName= ""OneATS DatabaseService""  start= ""auto"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess";
-Filename: "{cmd}"; Parameters: "/C ""sc config OADatabaseService displayname= ""OneATS Database Service"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess"; 
-Filename: "{cmd}"; Parameters: "/C ""sc description OADatabaseService ""OneATS Database Service (MongoDB Server)"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess";
+Filename: "{cmd}"; Parameters: "/C ""sc create ""MongoDB""  binPath= ""\""{autopf}\MongoDB\Server\4.2\bin\mongod.exe\"" --config \""{autopf}\MongoDB\Server\4.2\bin\mongod.cfg\"" --dbpath \""{code:GetMongoDataDir}\"" --logpath \""{code:GetMongoLogDir}\mongod.log\""  --service"" DisplayName= ""MongDB Server""  start= ""auto"""""; Flags: waituntilterminated skipifsilent; Check:"CheckInstallMongoDBsuccess";
+Filename: "{cmd}"; Parameters: "/C ""sc config MongoDB displayname= ""MongoDB Server"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess"; 
+Filename: "{cmd}"; Parameters: "/C ""sc description MongoDB ""MongoDB Database Server"""""; Flags: waituntilterminated skipifsilent; Check:"CheckInstallMongoDBsuccess";
 //Filename: "{cmd}"; Parameters: "/C ""sc start OADatabaseService"""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess";  
 
 
@@ -516,7 +516,7 @@ begin
   Result.Anchors := Source.Anchors;
   Result.OnClick := @CheckLicenseMongoDBAccepted;
 end;
-
+                      
 function IsMongoDataDirEmpty(): Boolean;
 var
   dirName :String;
@@ -536,19 +536,13 @@ begin
     finally
       FindClose(FindRec);
       if FileCount = 0 then Result := True;
+      if FileCount > 0 then 
+      begin                        
+       Result :=  DelTree(dirName +'\*', False, True, True);            
+      end;             
     end;
   end;
-end;                     
-  
-procedure ComponentOnClick(Sender: TObject); 
-begin          
-  {isHISReportViewerChecked :=False;
-  if WizardIsComponentSelected('HIS\ReportViewer') then     
-  begin
-    isHISReportViewerChecked := True;    
-  end;   }
-end;
-
+end;       
 
 
 procedure InitializeWizard();
@@ -561,9 +555,7 @@ begin
   GetVersionInRegistry();            
 
   WizardForm.ComponentsDiskSpaceLabel.Visible := False;
-  // catch event click on component
-  WizardForm.ComponentsList.OnClickCheck := @ComponentOnClick;   
-   
+    
   //CreateInputSourceModuleFilePage(wpWelcome);           
   //AddSourceModulePathToSelectDirpage();      
 
@@ -670,13 +662,13 @@ begin
             strMongoDBVersions := '';
             for i := 0 to GetArrayLength(arrMongoDB)-1 do
             strMongoDBVersions := strMongoDBVersions + arrMongoDB[i] + #13#10; 
-            ret :=   MsgBox('Exist MongoDB Instance version: ' + strMongoDBVersions +#13#10#13#10 'Please uninstall old version before install application, click "No" to try install!', mbInformation, MB_YESNO)              
-            if(ret= IDYES) then     
+            ret :=   MsgBox('Exist MongoDB Instance version: ' + strMongoDBVersions +#13#10#13#10 'Please uninstall old version before install application!' + #13#10 'Try to install this?', mbInformation, MB_YESNO)              
+            if(ret= IDNO) then     
             begin
                Result := False;                          
             end;
 
-            if(ret = IDNO) then
+            if(ret = IDYES) then
               Result := True;
                              
           end;
