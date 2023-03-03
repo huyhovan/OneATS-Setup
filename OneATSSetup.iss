@@ -1,4 +1,4 @@
-#define App_ID "{2C1AA803-8082-4279-805C-BC7BD756DF8A}"
+#define App_ID "{4734210B-E8D5-4678-8EE6-F3D25856AFB0}"
 #define App_CopyRight "Copyright (C)"
 #define App_Name "OneATS Setup"  
 #define App_Publisher "Applied Technical Systems Company, jsc."
@@ -85,7 +85,7 @@ Name:"HIS\HisServer"; Description: "His Server"; Types:full;   Flags:  disableno
 Name:"HIS\AdminTools"; Description: "Admin Tools"; Types:full;  Flags: disablenouninstallwarning;
 Name:"HIS\DataLink"; Description: "Data Link"; Types:full;   Flags: disablenouninstallwarning;
 Name:"HIS\ODBCDriver"; Description: "ODBC Driver"; Types:full;   Flags: disablenouninstallwarning;  
-Name:"HIS\WebService"; Description: "Web Service"; Flags: disablenouninstallwarning;  
+Name:"HIS\WebService"; Description: "Web Service"; Types:full; Flags: disablenouninstallwarning;  
 Name:"HIS\ReportViewer"; Description: "Report Viewer"; Types:full;   Flags: disablenouninstallwarning; 
 Name:"HIS\DataClient"; Description: "Data Client"; Types: full; Flags: disablenouninstallwarning;
                                                                                                              
@@ -99,9 +99,9 @@ Name:"HIS\DataClient"; Description: "Data Client"; Types: full; Flags: disableno
 Source: {#App_MongoDBLicense}; Flags: dontcopy;
 Source: "{#App_MongoDBInitFolder}\*";  DestDir:"{app}\MongoDB\MongoDB Initiate"; Flags:  ignoreversion recursesubdirs createallsubdirs deleteafterinstall;   Components:"MongoDB";
 Source: {#App_MongoDBFile}; DestName: "mongodb.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"MongoDB";
-Source: {#App_FepFile}; DestName: "Fep.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"FEP";
-Source: {#App_DSFile}; DestName: "DataServer.msi";  DestDir: {tmp}; Flags: deleteafterinstall ; Components:"Data\DataServer";
-Source: {#App_DEFile}; DestName: "DataEditor.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"Data\DE";
+Source: {#App_FepFile}; DestName: "fep.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"FEP";
+Source: {#App_DSFile}; DestName: "dataserver.msi";  DestDir: {tmp}; Flags: deleteafterinstall ; Components:"Data\DataServer";
+Source: {#App_DEFile}; DestName: "dataeditor.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"Data\DE";
 Source: {#App_HMIFile}; DestDir:{app};  Flags: deleteafterinstall ignoreversion   ; Components:"SmartHMI";
 Source: {#App_HISFile}; DestName: "SmartHis.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ;  Components:HIS\HisServer HIS\AdminTools HIS\DataLink HIS\ODBCDriver HIS\WebService HIS\ReportViewer HIS\DataClient ;
 Source: {#App_PiNSx86File}; DestName: "PINS.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"third_party\PiNS"; Check:"not IsWin64";
@@ -119,10 +119,22 @@ Name: "{autoprograms}\{#App_Name}"; Filename: "{app}\{#App_ExeName}";
 
 [Run]  
 
-Filename:"msiexec.exe"; Parameters: " /l*v mdbinstall.log /qn /i ""{tmp}\mongodb.msi"" ADDLOCAL=""ServerNoService""  SHOULD_INSTALL_COMPASS=""0"" INSTALLLOCATION=""{autopf}\MongoDB\Server\4.2\"" "; Flags:waituntilterminated; WorkingDir: {tmp};   Components:MongoDB;  StatusMsg: "Installing Database Server (MongoDB Server) ..."; BeforeInstall: SetMarqueeProgress(True);    
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\FEP.msi"" ";  WorkingDir: {tmp}; Components:FEP; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing FEP ...";  AfterInstall: SetMarqueeProgress(False);
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataServer.msi"" ";WorkingDir: {tmp}; Components:Data\DataServer;   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Data Server..."; 
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\DataEditor.msi"" ";WorkingDir: {tmp}; Components:Data\DE;   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
+Filename:"msiexec.exe"; Parameters: " /l*v mdbinstall.log /qn /i ""{tmp}\mongodb.msi"" ADDLOCAL=""ServerNoService""  SHOULD_INSTALL_COMPASS=""0"" INSTALLLOCATION=""{autopf}\MongoDB\Server\4.2\"" "; Flags:waituntilterminated; WorkingDir: {tmp};   Components:MongoDB;  StatusMsg: "Installing Database Server (MongoDB Server) ..."; 
+
+Filename: "{cmd}"; Parameters: "/C ""md ""{code:GetMongoDataDir}"" ""{code:GetMongoLogDir}"" """; Flags: waituntilterminated skipifsilent; Components:MongoDB; check:"CheckInstallMongoDBsuccess";  
+Filename: "{cmd}"; Parameters: "/C ""powershell copy-item '{app}\MongoDB\MongoDB Initiate\mongod.cfg' '{autopf}\MongoDB\Server\4.2\bin'  -force"""; Flags: waituntilterminated skipifsilent; Components:MongoDB; check:"CheckInstallMongoDBsuccess";  
+Filename: "{cmd}"; Parameters: "/C ""powershell ""(Get-Content -Path '{autopf}\MongoDB\Server\4.2\bin\mongod.cfg') | Foreach-Object {{$_.replace('D:\db\data','{code:GetMongoDataDir}').replace('D:\db\log','{code:GetMongoLogDir}')} | Out-File -encoding ASCII 'C:\Program Files\MongoDB\Server\4.2\bin\mongod.cfg'"""""; Flags: nowait skipifsilent; Components:MongoDB; Check:"CheckInstallMongoDBsuccess"; 
+Filename: "{cmd}"; Parameters: "/C ""copy ""{app}\MongoDB\MongoDB Initiate\oakeyfile.key""  ""{autopf}\MongoDB\Server\4.2\bin\"""""; Flags: nowait skipifsilent;Components:MongoDB;  check:"CheckInstallMongoDBsuccess";
+;Filename: "{cmd}"; Parameters: "/C ""sc stop MongoDB"""; Flags: waituntilterminated skipifsilent; Check:"CheckInstallMongoDBsuccess";    
+Filename: "{cmd}"; Parameters: "/C ""robocopy ""{app}\MongoDB\MongoDB Initiate\data"" ""{code:GetMongoDataDir}"" /s /e	 """; Flags: waituntilterminated skipifsilent; Components:MongoDB; Check:"IsMongoDataDirEmpty";
+Filename: "{cmd}"; Parameters: "/C ""sc create ""MongoDB""  binPath= ""\""{autopf}\MongoDB\Server\4.2\bin\mongod.exe\"" --config \""{autopf}\MongoDB\Server\4.2\bin\mongod.cfg\"" --service"" DisplayName= ""MongDB Server""  start= ""auto"""""; Flags: waituntilterminated skipifsilent; Components:MongoDB; Check:"CheckInstallMongoDBsuccess";
+Filename: "{cmd}"; Parameters: "/C ""sc config MongoDB displayname= ""MongoDB Server"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess"; 
+Filename: "{cmd}"; Parameters: "/C ""sc description MongoDB ""MongoDB Database Server"""""; Flags: waituntilterminated skipifsilent; Components:MongoDB; Check:"CheckInstallMongoDBsuccess";
+
+//
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\fep.msi"" ";  WorkingDir: {tmp}; Components:FEP; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing FEP ...";
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\dataserver.msi"" ";WorkingDir: {tmp}; Components:Data\DataServer;   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Data Server..."; 
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\dataeditor.msi"" ";WorkingDir: {tmp}; Components:Data\DE;   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
 Filename:"{app}\{#App_HMIName}";  Parameters:" /VERYSILENT  /NORESTART ";Components:SmartHMI; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Smart HMI ...";
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\SmartHis.msi"" ADDLOCAL=""{code:GetStringInfoHisSetup}"" "; WorkingDir: {tmp}; Components: HIS\HisServer HIS\AdminTools HIS\DataLink HIS\ODBCDriver HIS\WebService HIS\ReportViewer HIS\DataClient;  Flags:waituntilterminated; StatusMsg: "Installing Smart His ..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PINS.msi"" ";   WorkingDir: {tmp}; Components:third_party\PiNS; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi Network Subsystem..."; 
@@ -136,15 +148,7 @@ Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex86.msi""
 //Filename: "{cmd}"; Parameters: "/C ""sc config OADataServer displayname= ""OneATS Data Server""";  StatusMsg: "Installing OADataServer. Please wait...";Flags: nowait skipifsilent; Check:"IsDataServerChecked";      
 //Filename: "{cmd}"; Parameters: "/C ""sc description OADataServer  ""OneATS Real-time Data Processing"""; Flags: nowait skipifsilent; Check:"IsDataServerChecked";  
 //Filename: "{cmd}"; Parameters: "/C ""sc start OADataServer"""; StatusMsg: "Starting OADataServer ..."; Flags: nowait skipifsilent;   Check:"IsDataServerChecked";
-Filename: "{cmd}"; Parameters: "/C ""md ""{code:GetMongoDataDir}"" ""{code:GetMongoLogDir}"" """; Flags: waituntilterminated skipifsilent;  check:"CheckInstallMongoDBsuccess";  
-Filename: "{cmd}"; Parameters: "/C ""powershell copy-item '{app}\MongoDB\MongoDB Initiate\mongod.cfg' '{autopf}\MongoDB\Server\4.2\bin'  -force"""; Flags: waituntilterminated skipifsilent;  check:"CheckInstallMongoDBsuccess";  
-Filename: "{cmd}"; Parameters: "/C ""powershell ""(Get-Content -Path '{autopf}\MongoDB\Server\4.2\bin\mongod.cfg') | Foreach-Object {{$_.replace('D:\db\data','{code:GetMongoDataDir}').replace('D:\db\log','{code:GetMongoLogDir}')} | Out-File -encoding ASCII 'C:\Program Files\MongoDB\Server\4.2\bin\mongod.cfg'"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess"; 
-Filename: "{cmd}"; Parameters: "/C ""copy ""{app}\MongoDB\MongoDB Initiate\oakeyfile.key""  ""{autopf}\MongoDB\Server\4.2\bin\"""""; Flags: nowait skipifsilent;  check:"CheckInstallMongoDBsuccess";
-;Filename: "{cmd}"; Parameters: "/C ""sc stop MongoDB"""; Flags: waituntilterminated skipifsilent; Check:"CheckInstallMongoDBsuccess";    
-Filename: "{cmd}"; Parameters: "/C ""robocopy ""{app}\MongoDB\MongoDB Initiate\data"" ""{code:GetMongoDataDir}"" /s /e	 """; Flags: waituntilterminated skipifsilent; Check:"IsMongoDataDirEmpty";
-Filename: "{cmd}"; Parameters: "/C ""sc create ""MongoDB""  binPath= ""\""{autopf}\MongoDB\Server\4.2\bin\mongod.exe\"" --config \""{autopf}\MongoDB\Server\4.2\bin\mongod.cfg\"" --service"" DisplayName= ""MongDB Server""  start= ""auto"""""; Flags: waituntilterminated skipifsilent; Check:"CheckInstallMongoDBsuccess";
-Filename: "{cmd}"; Parameters: "/C ""sc config MongoDB displayname= ""MongoDB Server"""""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess"; 
-Filename: "{cmd}"; Parameters: "/C ""sc description MongoDB ""MongoDB Database Server"""""; Flags: waituntilterminated skipifsilent; Check:"CheckInstallMongoDBsuccess";
+
 //Filename: "{cmd}"; Parameters: "/C ""sc start OADatabaseService"""; Flags: nowait skipifsilent; Check:"CheckInstallMongoDBsuccess";  
 
 
