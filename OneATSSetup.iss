@@ -40,6 +40,8 @@
 #define App_OpcCorex86File      ReadIni(App_ConfigFile, "Third-Party", "OpcCorex86File", "")
 #define App_OpcCorex64Version   ReadIni(App_ConfigFile, "Third-Party", "OpcCorex64Version", "")
 #define App_OpcCorex64File      ReadIni(App_ConfigFile, "Third-Party", "OpcCorex64File", "")
+#define App_OneMasterToolFile "D:\Projects\OneATSSetup_InnoSetup\source\OneMasterTool_setup.exe"
+#define App_OneMasterToolName "OneMasterTool_setup.exe"
 
 
 [Setup]
@@ -87,8 +89,8 @@ Name:"HIS\DataLink"; Description: "Data Link"; Types:full;   Flags: disablenouni
 Name:"HIS\ODBCDriver"; Description: "ODBC Driver"; Types:full;   Flags: disablenouninstallwarning;  
 Name:"HIS\WebService"; Description: "Web Service"; Types:full; Flags: disablenouninstallwarning;  
 Name:"HIS\ReportViewer"; Description: "Report Viewer"; Types:full;   Flags: disablenouninstallwarning; 
-Name:"HIS\DataClient"; Description: "Data Client"; Types: full; Flags: disablenouninstallwarning;
-                                                                                                             
+Name:"HIS\DataClient"; Description: "Data Client"; Types: full; Flags: disablenouninstallwarning; 
+Name:"MasterTool"; Description: "OneMasterTool"; Types:full;   Flags: disablenouninstallwarning;                                                                                                             
  
 
 [UninstallDelete]
@@ -111,9 +113,10 @@ Source: {#App_VSRedisx86File}; DestDir:{app}; Flags: deleteafterinstall ignoreve
 Source: {#App_VSRedisx64File}; DestDir:{app}; Flags: deleteafterinstall ignoreversion ; Components:"third_party\VCRedistributable";
 Source: {#App_OpcCorex64File}; DestName:"OpcRedistributablex64.msi"; DestDir :{tmp}; Flags: deleteafterinstall ; Components: "third_party\OpcCore"; 
 Source: {#App_OpcCorex86File}; DestName:"OpcRedistributablex86.msi"; DestDir :{tmp}; Flags: deleteafterinstall ; Components: "third_party\OpcCore"; Check:" not IsWin64";
+Source: {#App_OneMasterToolFile}; DestDir:{app};  Flags: deleteafterinstall ignoreversion   ; Components:"MasterTool";    
 
 [Icons]
-Name: "{autoprograms}\{#App_Name}"; Filename: "{app}\{#App_ExeName}";
+//Name: "{autoprograms}\{#App_Name}"; Filename: "{app}\{#App_ExeName}";
 //Name: "{autodesktop}\{#App_Name}"; Filename: "{app}\{#App_ExeName}"; Tasks:desktopicon;
 
 
@@ -143,6 +146,7 @@ Filename:"{app}\VC_redist.x64.exe"; Parameters:" /QUIET /NORESTART"; Components:
 Filename:"{app}\VC_redist.x86.exe"; Parameters:" /QUIET /NORESTART"; Components:third_party\VCRedistributable; Flags: waituntilterminated;  StatusMsg: "Installing Visual redistributable 2015-2019 ..."; 
 Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex64.msi""";  WorkingDir: {tmp}; Components:third_party\OpcCore; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"IsWin64";
 Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex86.msi""";  WorkingDir: {tmp}; Components:third_party\OpcCore; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"not IsWin64";
+Filename:"{app}\{#App_OneMasterToolName}";  Parameters:" /VERYSILENT  /NORESTART ";Components:MasterTool; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing OneMasterTool ...";
 
 ;Windows service ultility
 //Filename: "{cmd}"; Parameters: "/C ""sc config OADataServer displayname= ""OneATS Data Server""";  StatusMsg: "Installing OADataServer. Please wait...";Flags: nowait skipifsilent; Check:"IsDataServerChecked";      
