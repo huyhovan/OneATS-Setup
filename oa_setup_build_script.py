@@ -53,11 +53,12 @@ config['MongoDB'] = {'mongodblicense': '' , 'mongodbinitfolder':''  ,'mongodbver
 config['FEP'] = {'fepversion': '',  'fepfile': ''}             
 config['DS_DE'] = {'dsversion': '', 'dsfile': '', 'deversion': '','defile': ''}  
 config['HMI'] = {'hmiversion': '',  'hmifile': '', 'hminame': ''} 
-config['HIS'] = {'hisversion': '',  'hisfile': ''} 
+config['HIS'] = {'hisversion': '',  'hisfile': ''}
+config['PSM'] = {'psmversion':'',   'psmfile': 'empty'}
 config['Third-Party'] = {'vsredisx86version': '','vsredisx86file': '','vsredisx64version': '','vsredisx64file': '',
                          'pinsx86version': '','pinsx86file': '','pinsx64version': '', 'pinsx64file': '',
                          'pisdkversion': '','pisdkfile': '',
-                         'opccorex86version': '3.00.108','opccorex86file': '','opccorex64version': '3.00.108','opccorex64file': ''  } 
+                         'opccorex86version': '3.00.108','opccorex86file': '','opccorex64version': '3.00.108','opccorex64file': ''  }
  
 # Update 
 config['Settings']['buildversion'] = timestamp
@@ -92,7 +93,11 @@ def UpdateConfigFile(fileName):
         
     if 'his' in fileName.lower():
         config['HIS']['hisversion']= (re.findall('[0-9.]*[0-9]+', fileName)[0])
-        config['HIS']['hisfile']= str(dir_path.file_path)+ "\\" + fileName  
+        config['HIS']['hisfile']= str(dir_path.file_path)+ "\\" + fileName 
+
+    if 'psm' in fileName.lower():
+        config['PSM']['psmversion']= (re.findall('[0-9.]*[0-9]+', fileName)[0])
+        config['PSM']['psmfile']= str(dir_path.file_path)+ "\\" + fileName         
         
     if('mongodb-win' in fileName.lower()):
         #config['MongoDB']['mongodbversion']= "4.2.5"

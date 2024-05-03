@@ -6,6 +6,7 @@
 #define App_ExeName "OneATSSetup"
 #define App_InstallDir "{autopf}\ATS" 
 #define App_Mongo4_2Dir  "{autopf}\MongoDB\Server\4.2"
+#define App_Mongo4_0Dir  "{autopf}\MongoDB\Server\4.0"
 
 
 #define App_ConfigFile SourcePath  + "\config.ini"    
@@ -26,6 +27,8 @@
 #define App_HMIName             ReadIni(App_ConfigFile, "HMI", "HMIName", "")
 #define App_HISVersion          ReadIni(App_ConfigFile, "HIS", "HISVersion", "")
 #define App_HISFile             ReadIni(App_ConfigFile, "HIS", "HISFile", "")
+#define App_PSMVersion          ReadIni(App_ConfigFile, "PSM", "PSMVersion", "")
+#define App_PSMFile             ReadIni(App_ConfigFile, "PSM", "PSMFile", "")
 #define App_VSRedisx86Version   ReadIni(App_ConfigFile, "Third-Party", "VSRedisx86Version", "")
 #define App_VSRedisx86File      ReadIni(App_ConfigFile, "Third-Party", "VSRedisx86File", "")
 #define App_VSRedisx64Version   ReadIni(App_ConfigFile, "Third-Party", "VSRedisx64Version", "")
@@ -88,9 +91,10 @@ Name:"HIS\AdminTools"; Description: "Admin Tools"; Types:full;  Flags: disableno
 Name:"HIS\DataLink"; Description: "Data Link"; Types:full;   Flags: disablenouninstallwarning;
 Name:"HIS\ODBCDriver"; Description: "ODBC Driver"; Types:full;   Flags: disablenouninstallwarning;  
 Name:"HIS\WebService"; Description: "Web Service"; Types:full; Flags: disablenouninstallwarning;  
-Name:"HIS\ReportViewer"; Description: "Report Viewer"; Types:full;   Flags: disablenouninstallwarning; 
-Name:"HIS\DataClient"; Description: "Data Client"; Types: full; Flags: disablenouninstallwarning; 
-Name:"MasterTool"; Description: "OneMasterTool"; Types:full;   Flags: disablenouninstallwarning;                                                                                                             
+Name:"HIS\ReportViewer"; Description: "Report Viewer"; Types:full;   Flags: disablenouninstallwarning;  
+Name:"HIS\DataClient"; Description: "Data Client"; Types: full; Flags: disablenouninstallwarning;      
+Name:"MasterTool"; Description: "OneMasterTool"; Types:full;   Flags: disablenouninstallwarning;   
+Name:"PSM"; Description: "PSM (Protection Settings Manager) ({#App_PSMVersion})"; Types:full;  Flags:  disablenouninstallwarning; Check:IsPSMFileSet                                                                                                           
  
 
 [UninstallDelete]
@@ -103,7 +107,7 @@ Source: "{#App_MongoDBInitFolder}\*";  DestDir:"{app}\MongoDB\MongoDB Initiate";
 Source: {#App_MongoDBFile}; DestName: "mongodb.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"MongoDB";
 Source: {#App_FepFile}; DestName: "fep.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"FEP";
 Source: {#App_DSFile}; DestName: "dataserver.msi";  DestDir: {tmp}; Flags: deleteafterinstall ; Components:"Data\DataServer";
-Source: {#App_DEFile}; DestName: "dataeditor.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"Data\DE";
+Source: {#App_DEFile}; DestName: "dataeditor.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"Data\DE";         
 Source: {#App_HMIFile}; DestDir:{app};  Flags: deleteafterinstall ignoreversion   ; Components:"SmartHMI";
 Source: {#App_HISFile}; DestName: "SmartHis.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ;  Components:HIS\HisServer HIS\AdminTools HIS\DataLink HIS\ODBCDriver HIS\WebService HIS\ReportViewer HIS\DataClient ;
 Source: {#App_PiNSx86File}; DestName: "PINS.msi";  DestDir: {tmp}; Flags: deleteafterinstall  ; Components:"third_party\PiNS"; Check:"not IsWin64";
@@ -114,6 +118,7 @@ Source: {#App_VSRedisx64File}; DestDir:{app}; Flags: deleteafterinstall ignoreve
 Source: {#App_OpcCorex64File}; DestName:"OpcRedistributablex64.msi"; DestDir :{tmp}; Flags: deleteafterinstall ; Components: "third_party\OpcCore"; 
 Source: {#App_OpcCorex86File}; DestName:"OpcRedistributablex86.msi"; DestDir :{tmp}; Flags: deleteafterinstall ; Components: "third_party\OpcCore"; Check:" not IsWin64";
 Source: {#App_OneMasterToolFile}; DestDir:{app};  Flags: deleteafterinstall ignoreversion   ; Components:"MasterTool";    
+Source: {#App_PSMFile}; DestName: "psm.msi";  DestDir: {tmp}; Flags: deleteafterinstall skipifsourcedoesntexist ; Components:"PSM";
 
 [Icons]
 //Name: "{autoprograms}\{#App_Name}"; Filename: "{app}\{#App_ExeName}";
@@ -137,7 +142,7 @@ Filename: "{cmd}"; Parameters: "/C ""sc description MongoDB ""MongoDB Database S
 //
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\fep.msi"" ";  WorkingDir: {tmp}; Components:FEP; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing FEP ...";
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\dataserver.msi"" ";WorkingDir: {tmp}; Components:Data\DataServer;   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Data Server..."; 
-Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\dataeditor.msi"" ";WorkingDir: {tmp}; Components:Data\DE;   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor..."; 
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\dataeditor.msi"" ";WorkingDir: {tmp}; Components:Data\DE;   Flags: waituntilterminated  runascurrentuser;  StatusMsg: "Installing Data Editor...";
 Filename:"{app}\{#App_HMIName}";  Parameters:" /VERYSILENT  /NORESTART ";Components:SmartHMI; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Smart HMI ...";
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\SmartHis.msi"" ADDLOCAL=""{code:GetStringInfoHisSetup}"" "; WorkingDir: {tmp}; Components: HIS\HisServer HIS\AdminTools HIS\DataLink HIS\ODBCDriver HIS\WebService HIS\ReportViewer HIS\DataClient;  Flags:waituntilterminated; StatusMsg: "Installing Smart His ..."; 
 Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\PINS.msi"" ";   WorkingDir: {tmp}; Components:third_party\PiNS; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing Pi Network Subsystem..."; 
@@ -147,6 +152,7 @@ Filename:"{app}\VC_redist.x86.exe"; Parameters:" /QUIET /NORESTART"; Components:
 Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex64.msi""";  WorkingDir: {tmp}; Components:third_party\OpcCore; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"IsWin64";
 Filename:"msiexec.exe"; Parameters:" /qb- /i ""{tmp}\OpcRedistributablex86.msi""";  WorkingDir: {tmp}; Components:third_party\OpcCore; Flags: waituntilterminated  runascurrentuser ; StatusMsg: "Installing OPC Redistributables ...";  Check:"not IsWin64";
 Filename:"{app}\{#App_OneMasterToolName}";  Parameters:" /VERYSILENT  /NORESTART ";Components:MasterTool; Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing OneMasterTool ...";
+Filename:"msiexec.exe"; Parameters:" /qn /i ""{tmp}\psm.msi"" ";WorkingDir: {tmp}; Components:PSM;   Flags: waituntilterminated  runascurrentuser; StatusMsg: "Installing Protection Settings Manager...";  Check: IsPSMFileSet
 
 ;Windows service ultility
 //Filename: "{cmd}"; Parameters: "/C ""sc config OADataServer displayname= ""OneATS Data Server""";  StatusMsg: "Installing OADataServer. Please wait...";Flags: nowait skipifsilent; Check:"IsDataServerChecked";      
@@ -254,6 +260,13 @@ begin
 
 end;
                                                                                         
+// Check PSM Module
+function IsPSMFileSet: Boolean;
+begin
+  Result := (Trim(ExpandConstant('{#App_PSMFile}')) <> 'empty');
+end;
+
+
 function TicksToStr(Value: DWORD): string;
 var
   I: DWORD;
@@ -560,12 +573,11 @@ var
   URLLabelMongoLicense :TNewStaticText;
 begin       
    
-  GetVersionInRegistry();            
-
+  GetVersionInRegistry(); 
   WizardForm.ComponentsDiskSpaceLabel.Visible := False;
     
   //CreateInputSourceModuleFilePage(wpWelcome);           
-  //AddSourceModulePathToSelectDirpage();      
+  //AddSourceModulePathToSelectDirpage();
 
   idMongoExecutePage := wpSelectTasks;
   //Create MongoDB Directory     
